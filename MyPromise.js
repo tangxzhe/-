@@ -81,6 +81,51 @@ MyPromise.prototype.then = function(onFullfillCb, onRejectCb) {
 MyPromise.prototype.catch = function(onRejectCb) {
   return this.then(null, onRejectCb)
 }
+// 静态方法
+MyPromise.resolve = function(val) {
+  return new MyPromise((resolve, reject) => {
+    resolve(val)
+  })
+}
+MyPromise.reject = function(err) {
+  return new MyPromise((resolve, reject) => {
+    reject(err)
+  })
+}
+
+MyPromise.all = function(arr) {
+  return new MyPromise((resolve, reject) => {
+    const len = arr.length
+    const results = []
+    let count = 0
+    for (let i = 0; i < len; i++) {
+      const p = arr[i]
+      p.then(res => {
+        results[i] = res
+        count++
+        if (count === len) {
+          resolve(results)
+        }
+      }).catch(err) {
+        reject(err)
+      }
+    }
+  })
+}
+
+MyPromise.race = function(arr) {
+  return new MyPromise((resolve, reject) => {
+    const len = arr.length
+    for (let i = 0; i < len; i++) {
+      const p = arr[i]
+      p.then(res => {
+        resolve(res)
+      }).catch(err) {
+        reject(err)
+      }
+    }
+  })
+}
 
 // 测试例子
 let p = new MyPromise((resolve, reject) => {
